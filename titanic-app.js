@@ -215,7 +215,7 @@ const answers = [
             ["Male", "Master", "2nd Class = Middle", "Cherbourg"],
             ["Male", "Master", "2nd Class = Middle", "Queenstown"],
             ["Male", "Master", "2nd Class = Middle", "Southampton"],
-            ["Male", "Mr", "3rd Class = Lower", "Cherbourg"],
+            ['Male', 'Mr', '3rd Class = Lower', 'Cherbourg'],
             ["Male", "Mr", "3rd Class = Lower", "Queenstown"],
             ["Male", "Mr", "3rd Class = Lower", "Southampton"],
             ["Male", "Master", "3rd Class = Lower", "Cherbourg"],
@@ -234,60 +234,72 @@ const answers = [
     }
 ];
 
+// Function to check if two arrays are equal
+function arraysEqual(arr1, arr2) {
+    // Check if the arrays have the same length
+    if (arr1.length !== arr2.length) return false;
 
-// Function to show the answer based on whether the passenger survived or not
+    // Check if each element in the arrays matches
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Function to show the answer based on the chosen answers
 function showAnswer() {
-    let result = answers[0]; // Default to the first answer object if no match is found
-    const chosenSet = new Set(chosenAnswers); // Set of chosen answers
+    console.log('Chosen Answers:', chosenAnswers);
 
-    // Loop through each answer object in the 'answers' array
+    let result = null;
+
+    // Check against the "Survived" and "Did not Survive" options
     for (const answer of answers) {
-        let combinationMatches = true; // Assume all elements in the combination match
-
-        // Check if each element in the combination array is in the chosen answers
-        for (const item of answer.combination) {
-            if (!chosenSet.has(item)) {
-                combinationMatches = false;
+        for (const combination of answer.combination) {
+            if (arraysEqual(combination, chosenAnswers)) {
+                result = answer;
                 break;
             }
         }
-
-        // If all elements in the combination match the chosen answers, set the result
-        if (combinationMatches) {
-            result = answer;
-            break; // Exit the loop early since a match is found
+        if (result) {
+            break; // Exit the loop if a match is found
         }
     }
 
-    // Hide the questions section
-    questionDisplay.style.display = 'none';
+    // If a result is found, display it
+    if (result) {
+        console.log('Final Result:', result);
 
-    // Create and display the result block
-    const answerBlock = document.createElement('div');
-    // Example: Handle touch events in addition to click events
-    answerBlock.addEventListener('touchstart', () => handleClick(answer.text));
-    answerBlock.classList.add('result-block');
-    const answerTitle = document.createElement('h3');
-    answerTitle.textContent = result.text;
-    const answerImage = document.createElement('img');
-    answerImage.setAttribute('src', result.image);
-    answerImage.setAttribute('alt', result.alt);
+        // Hide the questions section
+        questionDisplay.style.display = 'none';
 
-    answerBlock.append(answerTitle, answerImage);
-    answerDisplay.innerHTML = ''; // Clear previous content
-    answerDisplay.append(answerBlock);
+        // Create and display the result block
+        const answerBlock = document.createElement('div');
+        answerBlock.classList.add('result-block');
+        const answerTitle = document.createElement('h3');
+        answerTitle.textContent = result.text;
+        const answerImage = document.createElement('img');
+        answerImage.setAttribute('src', result.image);
+        answerImage.setAttribute('alt', result.alt);
 
-    // Apply corresponding effects based on the result
-    if (result.text === "Did not Survive") {
-        applyRainEffect(); // Apply rain effect
-        document.body.classList.add('not-survived-page'); // Add custom class for styling
-    } else if (result.text === "Survived") {
-        createConfetti(); // Apply confetti effect
-        document.body.classList.add('survived-page'); // Add custom class for styling
+        answerBlock.append(answerTitle, answerImage);
+        answerDisplay.innerHTML = ''; // Clear previous content
+        answerDisplay.append(answerBlock);
+
+        // Apply corresponding effects based on the result
+        if (result.text === "Did not Survive") {
+            applyRainEffect(); // Apply rain effect
+            document.body.classList.add('not-survived-page'); // Add custom class for styling
+        } else if (result.text === "Survived") {
+            createConfetti(); // Apply confetti effect
+            document.body.classList.add('survived-page'); // Add custom class for styling
+        }
+    } else {
+        console.log('No matching result found for chosen answers.');
     }
 }
-
-
 
 
 const disableQuestionBlock = (questionId, chosenAnswer) => {
@@ -380,5 +392,3 @@ function createConfetti() {
 
     document.body.appendChild(confettiContainer);
 }
-
-
